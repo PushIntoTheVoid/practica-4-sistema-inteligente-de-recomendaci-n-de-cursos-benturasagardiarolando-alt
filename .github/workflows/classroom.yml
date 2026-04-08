@@ -23,10 +23,21 @@ jobs:
         command: javac -cp "lib/*:src" src/*.java -d bin && java -cp "bin:lib/*" org.junit.platform.console.ConsoleLauncher
           --select-class SistemaRecomendacionTest
         timeout: 10
-        max-score: 100
+        max-score: 50
+    - name: Validación de Ranking e Historial
+      id: validacion-de-ranking-e-historial
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Validación de Ranking e Historial
+        setup-command: ''
+        command: javac -cp "lib/*:src" src/*.java -d bin && java -cp "bin:lib/*" org.junit.platform.console.ConsoleLauncher
+          --select-class SistemaRecomendacionRankingTest
+        timeout: 10
+        max-score: 50
     - name: Autograding Reporter
       uses: classroom-resources/autograding-grading-reporter@v1
       env:
         VALIDACION-DE-LOGICA-DE-RECOMENDACION_RESULTS: "${{steps.validacion-de-logica-de-recomendacion.outputs.result}}"
+        VALIDACION-DE-RANKING-E-HISTORIAL_RESULTS: "${{steps.validacion-de-ranking-e-historial.outputs.result}}"
       with:
-        runners: validacion-de-logica-de-recomendacion
+        runners: validacion-de-logica-de-recomendacion,validacion-de-ranking-e-historial
