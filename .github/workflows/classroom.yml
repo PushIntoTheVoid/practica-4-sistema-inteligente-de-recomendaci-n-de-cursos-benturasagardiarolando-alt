@@ -1,0 +1,32 @@
+name: Autograding Tests
+'on':
+- push
+- repository_dispatch
+permissions:
+  checks: write
+  actions: read
+  contents: read
+jobs:
+  run-autograding-tests:
+    runs-on: ubuntu-latest
+    if: github.actor != 'github-classroom[bot]'
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    - name: Validación de Lógica de Recomendación
+      id: validacion-de-logica-de-recomendacion
+      uses: classroom-resources/autograding-command-grader@v1
+      with:
+        test-name: Validación de Lógica de Recomendación
+        setup-command: mkdir -p lib && wget -O lib/junit-platform-console-standalone.jar
+          https://repo1.maven.org/maven2/org/junit/platform/junit-platform-console-standalone/1.10.0/junit-platform-console-standalone-1.10.0.jar
+        command: javac -cp "lib/*:src" src/*.java -d bin && java -cp "bin:lib/*" org.junit.platform.console.ConsoleLauncher
+          --select-class SistemaRecomendacionTest
+        timeout: 10
+        max-score: 100
+    - name: Autograding Reporter
+      uses: classroom-resources/autograding-grading-reporter@v1
+      env:
+        VALIDACION-DE-LOGICA-DE-RECOMENDACION_RESULTS: "${{steps.validacion-de-logica-de-recomendacion.outputs.result}}"
+      with:
+        runners: validacion-de-logica-de-recomendacion
